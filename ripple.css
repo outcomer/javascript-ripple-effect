@@ -5,6 +5,7 @@
 
 	100% {
 		transform: scale(1);
+		/* Shadow of ripple circle */
 		box-shadow: inset 0 0 0 0 rgb(0 0 0 / 29%);
 	}
 }
@@ -12,6 +13,7 @@
 @keyframes ripple-hover-out {
 	0% {
 		transform: scale(1);
+		/* Shadow of ripple circle */
 		box-shadow: inset 0 0 0 0 rgb(0 0 0 / 29%);
 	}
 
@@ -44,12 +46,15 @@
 	transform: scale(0);
 	transition: transform 0.5s, opacity 0.5s;
 	position: absolute;
+	/* Color of ripple circle for hover effect */
 	background: lime;
 }
 
 .ripple-effect-click {
 	z-index: 100;
+	/* Opacity of ripple circle for click effect */
 	opacity: 0.4;
+	/* Color of ripple circle for click effect */
 	background: #000;
 	animation: ripple-click 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
