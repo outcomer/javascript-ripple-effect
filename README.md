@@ -9,7 +9,7 @@
 - `.ripple-click` produce effect within a click (tap on touchscreen devices) at container with this class;
 - `.ripple-hover` produce effect on hover over container with this class;
 - Hover effect does not work on touchscreen devices - no sense;
-- The script has no arguments or option, all configuration of effect stores in CSS styles - look into `ripple.css`;
+- The script has no arguments or option. It realize only methematics and apply propper classes. So all configuration of effect in fact lives in CSS styles - look into `ripple.css` (colors, animation settings - everything is there);
 
 
 ### Demo or what you can expect
