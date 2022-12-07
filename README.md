@@ -10,7 +10,7 @@
 - `.ripple-hover` produce effect on hover over container with this class;
 - Hover effect does not work on touchscreen devices - no sense;
 - The script has no arguments or option. It realize only methematics and apply propper classes. So all configuration of effect in fact lives in CSS styles - look into `ripple.css` (colors, animation settings - everything is there);
-
+Test
 
 ### Demo or what you can expect
 ![Demo CountPages alpha](https://github.com/outcomer/javascript-ripple-effect/blob/main/demo.gif)
