@@ -13,7 +13,7 @@
  *
  * @return void
  */
-const rippleFn = (() => {
+const rippleFn = () => {
 	/**
 	 * @param {WeakMap}
 	 */
@@ -37,7 +37,7 @@ const rippleFn = (() => {
 	 * @return {Object} Saved data or an empty object.
 	 */
 	const getElementData = (element) => {
-		if ('undefined' === typeof elementDataMap.get(element, 'data')) {
+		if (typeof elementDataMap.get(element, 'data') === 'undefined') {
 			setElementData(element, {})
 		}
 
@@ -56,30 +56,29 @@ const rippleFn = (() => {
 	 */
 	const prepareRipple = function (event, target) {
 		// Get width and height that will 100% cover target on ripple.
-		const client = target.getBoundingClientRect(),
-			x = event.clientX,
-			y = event.clientY,
-			toLeft = x - client.left,
-			toRight = client.right - x,
-			toTop = y - client.top,
-			toBottom = client.bottom - y,
-			maxX = Math.max(toLeft, toRight),
-			maxY = Math.max(toTop, toBottom),
-			deltaRadius = Math.hypot(maxX, maxY) - Math.max(maxX, maxY)
+		const client = target.getBoundingClientRect()
+		const x = event.clientX
+		const y = event.clientY
+		const toLeft = x - client.left
+		const toRight = client.right - x
+		const toTop = y - client.top
+		const toBottom = client.bottom - y
+		const maxX = Math.max(toLeft, toRight)
+		const maxY = Math.max(toTop, toBottom)
+		const deltaRadius = Math.hypot(maxX, maxY) - Math.max(maxX, maxY)
 
 		const buttonWidth = (Math.max(maxX, maxY) + deltaRadius) * 2
 		const buttonHeight = buttonWidth
 
-		return {
-			height: buttonHeight,
-			width: buttonWidth,
-			left: event.pageX - target.getBoundingClientRect().left - buttonWidth / 2,
-			top:
-				event.pageY -
-				(target.getBoundingClientRect().top +
-					document.documentElement.scrollTop) -
-				buttonHeight / 2,
-		}
+		const ripple = document.createElement('span')
+		ripple.className = 'ripple'
+
+		ripple.style.height = `${buttonHeight}px`
+		ripple.style.width = `${buttonWidth}px`
+		ripple.style.left = `${event.pageX - target.getBoundingClientRect().left - buttonWidth / 2}px`
+		ripple.style.top = `${event.pageY - (target.getBoundingClientRect().top + document.documentElement.scrollTop) - buttonHeight / 2}px`
+
+		return ripple
 	}
 
 	/**
@@ -100,32 +99,26 @@ const rippleFn = (() => {
 			ripples.remove()
 		}
 
-		const ripple = document.createElement('span')
-		const rippleData = prepareRipple(event, target)
+		const rippleHTML = prepareRipple(event, target)
+		rippleHTML.classList.add('ripple', 'ripple-effect-click')
 
-		ripple.classList.add('ripple', 'ripple-effect-click')
-		ripple.style.height = `${rippleData.height}px`
-		ripple.style.width = `${rippleData.width}px`
-		ripple.style.left = `${rippleData.left}px`
-		ripple.style.top = `${rippleData.top}px`
-
-		target.appendChild(ripple)
+		target.appendChild(rippleHTML)
 
 		// eslint-disable-next-line no-unused-vars
 		return await new Promise((resolve, reject) => {
-			const transition = window.getComputedStyle(ripple).transitionDuration
+			const transition = window.getComputedStyle(rippleHTML).transitionDuration
 			const delay =
 				Math.max.apply(Math, transition.split(',').map(parseFloat)) * 1000
 
 			setTimeout(
 				function (timerTarget) {
 					setElementData(target, { licketySplitDoRipleClick: false })
-					ripple.remove()
+					rippleHTML.remove()
 					resolve([event, timerTarget])
 				},
 				delay,
 				target,
-				ripple
+				rippleHTML
 			)
 		})
 	}
@@ -140,41 +133,35 @@ const rippleFn = (() => {
 	 * @return {Promise} Promise resolved immediately.
 	 */
 	const doRippleHoverIn = async function (event) {
-		const target = event.target.closest('.ripple-hover')
+		const rippleElement = event.target.closest('.ripple-hover')
 		const relatedTarget = event.relatedTarget
 			? event.relatedTarget.closest('.ripple-hover')
 			: null
 
-		if (!target || target === relatedTarget) {
+		if (!rippleElement || rippleElement === relatedTarget) {
 			return
 		}
 
-		clearTimeout(getElementData(target).rippleHoverOutTimer)
+		clearTimeout(getElementData(rippleElement).rippleHoverOutTimer)
+		let rippleHTML = prepareRipple(event, rippleElement)
+		const currentRipple = rippleElement.querySelector('.ripple')
 
-		let ripple = document.createElement('span')
-		const rippleData = prepareRipple(event, target)
-		const currentRipple = target.querySelector('.ripple')
-
-		ripple.classList.add('ripple', 'ripple-effect-hover-in')
-		ripple.style.height = `${rippleData.height}px`
-		ripple.style.width = `${rippleData.width}px`
-		ripple.style.left = `${rippleData.left}px`
-		ripple.style.top = `${rippleData.top}px`
+		rippleHTML.classList.add('ripple', 'ripple-effect-hover-in')
 
 		if (currentRipple === null) {
-			target.appendChild(ripple)
+			rippleElement.appendChild(rippleHTML)
 		} else {
-			currentRipple.style.height = `${rippleData.height}px`
-			currentRipple.style.width = `${rippleData.width}px`
-			currentRipple.style.left = `${rippleData.left}px`
-			currentRipple.style.top = `${rippleData.top}px`
+			currentRipple.style.height = rippleHTML.style.height
+			currentRipple.style.width = rippleHTML.style.width
+			currentRipple.style.left = rippleHTML.style.left
+			currentRipple.style.top = rippleHTML.style.top
 			currentRipple.classList.remove('ripple-effect-hover-out')
 			currentRipple.classList.add('ripple-effect-hover-in')
 
-			ripple = currentRipple
+			rippleHTML = currentRipple
 		}
 
-		return Promise.resolve([event, target])
+		return Promise.resolve([event, rippleElement])
 	}
 
 	/**
@@ -187,55 +174,47 @@ const rippleFn = (() => {
 	 * @return {Promise} Promise will be resolved once animation finished.
 	 */
 	const doRippleHoverOut = async function (event) {
-		const target = event.target.closest('.ripple-hover')
+		const rippleElement = event.target.closest('.ripple-hover')
 		const relatedTarget = event.relatedTarget
 			? event.relatedTarget.closest('.ripple-hover')
 			: null
 
-		if (!target || target === relatedTarget) {
+		if (!rippleElement || rippleElement === relatedTarget) {
 			return
 		}
 
-		let ripple = document.createElement('span')
-		const rippleData = prepareRipple(event, target)
-		const currentRipple = target.querySelector('.ripple')
-
-		ripple.classList.add('ripple', 'ripple-effect-hover-out')
-		ripple.style.height = `${rippleData.height}px`
-		ripple.style.width = `${rippleData.width}px`
-		ripple.style.left = `${rippleData.left}px`
-		ripple.style.top = `${rippleData.top}px`
+		let rippleHTML = prepareRipple(event, rippleElement)
+		const currentRipple = rippleElement.querySelector('.ripple')
 
 		if (currentRipple === null) {
-			target.appendChild(ripple)
+			rippleElement.appendChild(rippleHTML)
 		} else {
-			currentRipple.style.height = `${rippleData.height}px`
-			currentRipple.style.width = `${rippleData.width}px`
-			currentRipple.style.left = `${rippleData.left}px`
-			currentRipple.style.top = `${rippleData.top}px`
+			currentRipple.style.height = rippleHTML.style.height
+			currentRipple.style.width = rippleHTML.style.width
+			currentRipple.style.left = rippleHTML.style.left
+			currentRipple.style.top = rippleHTML.style.top
 			currentRipple.classList.remove('ripple-effect-hover-in')
 			currentRipple.classList.add('ripple-effect-hover-out')
 
-			ripple = currentRipple
+			rippleHTML = currentRipple
 		}
 
 		// eslint-disable-next-line no-unused-vars
 		return await new Promise((resolve, reject) => {
-			const transition = window.getComputedStyle(ripple).transitionDuration
-			const delay =
-				Math.max.apply(Math, transition.split(',').map(parseFloat)) * 1000
+			const transition = window.getComputedStyle(rippleHTML).transitionDuration
+			const delay = Math.max.apply(Math, transition.split(',').map(parseFloat)) * 1000
 
 			const rippleHoverOutTimer = setTimeout(
-				function (timerTarget) {
-					ripple.remove()
+				(timerTarget) => {
+					rippleHTML.remove()
 					resolve([event, timerTarget])
 				},
 				delay,
-				target,
-				ripple
+				rippleElement,
+				rippleHTML
 			)
 
-			setElementData(target, { rippleHoverOutTimer })
+			setElementData(rippleElement, { rippleHoverOutTimer })
 		})
 	}
 
@@ -261,16 +240,16 @@ const rippleFn = (() => {
 		})
 	}
 
-	document.querySelector('body').addEventListener('click', rippleClick)
+	const run = () => {
+		document.querySelector('body').addEventListener('click', rippleClick)
 
-	if ('ontouchstart' in window === false) {
-		document
-			.querySelector('body')
-			.addEventListener('mouseover', doRippleHoverIn)
-		document
-			.querySelector('body')
-			.addEventListener('mouseout', doRippleHoverOut)
+		if ('ontouchstart' in window === false) {
+			document.body.addEventListener('mouseover', doRippleHoverIn)
+			document.body.addEventListener('mouseout', doRippleHoverOut)
+		}
 	}
-})()
 
-module.exports = rippleFn
+	document.addEventListener('DOMContentLoaded', run)
+}
+
+export default rippleFn
