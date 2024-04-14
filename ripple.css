@@ -1,81 +1,79 @@
 :root {
-	--pl-ripple-speed-hover: 0.3s;
-	--pl-ripple-speed-click: 0.6s;
-	--pl-ripple-bg-color-hover: #00000014;
-	--pl-ripple-bg-color-click: #00000069;
+	--ripple-speed-hover: 0.3s;
+	--ripple-speed-click: 0.6s;
+	--ripple-bg-color-hover: #00000014;
+	--ripple-bg-color-click: #00000069;
 }
 
-.#{$platinumlist-namespace-front} {
-	// Base styles for ripple effects
-	.ripple,
-	.ripple-click,
-	.ripple-hover {
-		position: relative;
-		overflow: hidden;
-	}
+// Base styles for ripple effects
+.ripple,
+.ripple-click,
+.ripple-hover {
+	position: relative;
+	overflow: hidden;
+}
 
-	.ripple {
-		width: 0;
-		height: 0;
-		border-radius: 50%;
+.ripple {
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	transform: scale(0);
+	transition: transform var(--ripple-speed-hover), opacity var(--ripple-speed-hover);
+	position: absolute;
+	background: var(--ripple-bg-color-hover);
+}
+
+// HOVER
+.ripple-hover {
+	z-index: 0;
+}
+
+// CLICK
+.ripple-effect-click {
+	z-index: 100;
+	pointer-events: none;
+	background: var(--ripple-bg-color-click);
+	animation: ripple-click var(--ripple-speed-click) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ripple-effect-hover-in,
+.ripple-effect-hover-out {
+	z-index: -1;
+	pointer-events: none;
+}
+
+.ripple-effect-hover-in {
+	animation: ripple-hover-in var(--ripple-speed-hover) ease-out forwards;
+}
+
+.ripple-effect-hover-out {
+	animation: ripple-hover-out var(--ripple-speed-hover) ease-out forwards;
+}
+
+// Keyframes for ripple animations
+@keyframes ripple-hover-in {
+	0% {
 		transform: scale(0);
-		transition: transform var(--pl-ripple-speed-hover), opacity var(--pl-ripple-speed-hover);
-		position: absolute;
-		background: var(--pl-ripple-bg-color-hover);
 	}
 
-	// HOVER
-	.ripple-hover {
-		z-index: 0;
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes ripple-hover-out {
+	0% {
+		transform: scale(1);
 	}
 
-	// CLICK
-	.ripple-effect-click {
-		z-index: 100;
-		pointer-events: none;
-		background: var(--pl-ripple-bg-color-click);
-		animation: ripple-click var(--pl-ripple-speed-click) cubic-bezier(0.4, 0, 0.2, 1);
+	100% {
+		transform: scale(0);
 	}
+}
 
-	.ripple-effect-hover-in,
-	.ripple-effect-hover-out {
-		z-index: -1;
-		pointer-events: none;
-	}
-
-	.ripple-effect-hover-in {
-		animation: ripple-hover-in var(--pl-ripple-speed-hover) ease-out forwards;
-	}
-
-	.ripple-effect-hover-out {
-		animation: ripple-hover-out var(--pl-ripple-speed-hover) ease-out forwards;
-	}
-
-	// Keyframes for ripple animations
-	@keyframes ripple-hover-in {
-		0% {
-			transform: scale(0);
-		}
-
-		100% {
-			transform: scale(1);
-		}
-	}
-
-	@keyframes ripple-hover-out {
-		0% {
-			transform: scale(1);
-		}
-
-		100% {
-			transform: scale(0);
-		}
-	}
-
-	@keyframes ripple-click {
-		100% {
-			transform: scale(1);
-			opacity: 0;
-		}
+@keyframes ripple-click {
+	100% {
+		transform: scale(1);
+		opacity: 0;
 	}
 }
