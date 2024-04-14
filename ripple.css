@@ -1,3 +1,56 @@
+:root {
+	--ripple-speed-hover: 0.3s;
+	--ripple-speed-click: 0.6s;
+	--ripple-bg-color-hover: #00000014;
+	--ripple-bg-color-click: #00000069;
+}
+
+// Base styles for ripple effects
+.ripple,
+.ripple-click,
+.ripple-hover {
+	position: relative;
+	overflow: hidden;
+}
+
+.ripple {
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	transform: scale(0);
+	transition: transform var(--ripple-speed-hover), opacity var(--ripple-speed-hover);
+	position: absolute;
+	background: var(--ripple-bg-color-hover);
+}
+
+// HOVER
+.ripple-hover {
+	z-index: 0;
+}
+
+// CLICK
+.ripple-effect-click {
+	z-index: 100;
+	pointer-events: none;
+	background: var(--ripple-bg-color-click);
+	animation: ripple-click var(--ripple-speed-click) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ripple-effect-hover-in,
+.ripple-effect-hover-out {
+	z-index: -1;
+	pointer-events: none;
+}
+
+.ripple-effect-hover-in {
+	animation: ripple-hover-in var(--ripple-speed-hover) ease-out forwards;
+}
+
+.ripple-effect-hover-out {
+	animation: ripple-hover-out var(--ripple-speed-hover) ease-out forwards;
+}
+
+// Keyframes for ripple animations
 @keyframes ripple-hover-in {
 	0% {
 		transform: scale(0);
@@ -5,16 +58,12 @@
 
 	100% {
 		transform: scale(1);
-		/* Shadow of ripple circle */
-		box-shadow: inset 0 0 0 0 rgb(0 0 0 / 29%);
 	}
 }
 
 @keyframes ripple-hover-out {
 	0% {
 		transform: scale(1);
-		/* Shadow of ripple circle */
-		box-shadow: inset 0 0 0 0 rgb(0 0 0 / 29%);
 	}
 
 	100% {
@@ -27,49 +76,4 @@
 		transform: scale(1);
 		opacity: 0;
 	}
-}
-
-.ripple-click,
-.ripple-hover {
-	position: relative;
-	overflow: hidden;
-}
-
-.ripple-hover {
-	z-index: 0;
-}
-
-.ripple {
-	width: 0;
-	height: 0;
-	border-radius: 50%;
-	transform: scale(0);
-	transition: transform 0.5s, opacity 0.5s;
-	position: absolute;
-	/* Color of ripple circle for hover effect */
-	background: lime;
-}
-
-.ripple-effect-click {
-	z-index: 100;
-	/* Opacity of ripple circle for click effect */
-	opacity: 0.4;
-	/* Color of ripple circle for click effect */
-	background: #000;
-	animation: ripple-click 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ripple-effect-hover-in,
-.ripple-effect-hover-out {
-	opacity: 1;
-	z-index: -1;
-	pointer-events: none;
-}
-
-.ripple-effect-hover-in {
-	animation: ripple-hover-in 0.3s ease-out forwards;
-}
-
-.ripple-effect-hover-out {
-	animation: ripple-hover-out 0.2s ease-out forwards;
 }
